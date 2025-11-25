@@ -1,11 +1,11 @@
 const executeQuery = require('../services/query');
 const modelSenai = {
-    //Registrar
-    cadastrarMedicamentos: async (nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade) => {
+    
+    cadastrarAlimentos: async (nome, calorias, quantidade) => {
         try {
             const result = await executeQuery(
-                "INSERT INTO  cadastrar_medicamentos (nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade) VALUES (?, ?, ?, ?, ?, ?)",
-                [nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade]
+                "INSERT INTO  alimentos (nome, calorias, quantidade) VALUES (?, ?, ?)",
+                [nome, calorias, quantidade]
             );
             return result;
         } catch (error) {
@@ -13,26 +13,38 @@ const modelSenai = {
         }
     },
 
-    cadastrarUsuarios: async (nome, idade, email, senha, setor) => {
+    cadastrarUsuarios: async (nome, sobrenome, email, senha) => {
         try {
             const result = await executeQuery(
-                "INSERT INTO  usuarios (nome, idade, email, senha, setor) VALUES (?, ?, ?, ?, ?)",
-                [nome, idade, email, senha, setor]
+                "INSERT INTO  usuarios (nome, sobrenome, email, senha) VALUES (?, ?, ?, ?)",
+                [nome, sobrenome, email, senha]
             );
             return result;
         } catch (error) {
             throw error;
         }
     },
-    //Obter EMAIL
+
+    validarLogin: async (email, senha) => {
+        try {
+            const [result] = await conexao.query(
+                "SELECT id, nome, email, senha FROM usuarios WHERE email = ? AND senha = ?",
+                [email, senha]
+            );
+            return result;
+        } catch (erro) {
+            return erro;
+        }
+    },
+   
     consultarEmail: async (email) => {
         const result = await executeQuery("SELECT * FROM  usuarios WHERE email = ?", [email]);
         return result;
     },
-    //Listar
+  
     listar: async () => {
         try {
-            const result = await executeQuery("SELECT id, nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade FROM cadastrar_medicamentos")
+            const result = await executeQuery("SELECT nome, calorias, quantidade FROM alimentos")
             return result;
         }
         catch (error) {
@@ -40,20 +52,20 @@ const modelSenai = {
         }
     },
     listarPorID: async (id) => {
-        return await executeQuery("SELECT * FROM cadastrar_medicamentos WHERE id = ?", [id]);
+        return await executeQuery("SELECT * FROM alimentos WHERE id = ?", [id]);
     },
-    //Atualizar
-    atualizar: async (nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade, id) => {
+   
+    atualizar: async (nome, calorias, quantidade, id) => {
         try {
-            const result = await executeQuery("UPDATE cadastrar_medicamentos SET nome=?, fabricante=?, categoria=?, forma_farmaceutica=?, dosagem=?, quantidade=? WHERE id=?",
-                [nome, fabricante, categoria, forma_farmaceutica, dosagem, quantidade,  id])
+            const result = await executeQuery("UPDATE alimentos SET nome=?, calorias=?, quantidade=? WHERE id=?",
+                [nome, calorias, quantidade, id])
             return result;
         } catch (error) {
             console.log(error);
             throw error;
         }
     },
-    //Deletar
+    
     deletar: async (id) => {
         const result = await executeQuery("DELETE FROM cadastrar_medicamentos WHERE id=?", [id])
         return result;
