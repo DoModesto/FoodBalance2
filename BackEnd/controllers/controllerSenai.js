@@ -44,11 +44,16 @@ const controllerSenai = {
 
     login: async (req, res) => {
         const { email, senha } = req.body;
+
+        console.log(req.body);
+        
         try {
             const resultado = await modelSenai.validarLogin(email, senha);
+
+            console.log(resultado);
             
-            if (resultado.length > 0) {
-                res.status(200).json(resultado[0]);
+            if (resultado) {
+                res.status(200).json(resultado);
             }
             else {
                 res.status(401).json({ msg: "Email ou senha inválidos" });

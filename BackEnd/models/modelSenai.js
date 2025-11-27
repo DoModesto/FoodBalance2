@@ -1,4 +1,5 @@
 const executeQuery = require('../services/query');
+const bycrypt = require('bcrypt');
 const modelSenai = {
     
     cadastrarAlimentos: async (nome, calorias, quantidade) => {
@@ -15,9 +16,14 @@ const modelSenai = {
 
     cadastrarUsuarios: async (nome, sobrenome, email, senha) => {
         try {
+
+            const password = await bycrypt.hash(senha,10);
+
+            console.log(password);
+
             const result = await executeQuery(
                 "INSERT INTO  usuarios (nome, sobrenome, email, senha) VALUES (?, ?, ?, ?)",
-                [nome, sobrenome, email, senha]
+                [nome, sobrenome, email, password]
             );
             return result;
         } catch (error) {
@@ -27,12 +33,28 @@ const modelSenai = {
 
     validarLogin: async (email, senha) => {
         try {
-            const [result] = await conexao.query(
-                "SELECT id, nome, email, senha FROM usuarios WHERE email = ? AND senha = ?",
+            const [resultado] = await executeQuery(
+                "SELECT id, nome, email, senha FROM usuarios WHERE email = ?",
                 [email, senha]
             );
-            return result;
-        } catch (erro) {
+
+            console.log(resultado);
+
+            if(resultado){
+                const validarSenha = bycrypt.compare(senha, resultado.senha);
+
+                if(validarSenha){
+                    return resultado;
+                }
+                else{
+                    return null
+                }
+            }
+            else{
+                return null;
+            }
+        } 
+        catch (erro) {
             return erro;
         }
     },

@@ -1,40 +1,41 @@
 import Icon from '@react-native-vector-icons/ionicons';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
+import { StyleSheet, Text, Button, View, TextInput, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
-export default function Login({ navigation }) {
+const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [erroMensagem, setMensagem] = useState('');
 
-    async function Entrar() {
-        if (email.length > 0 && senha.length > 0) {
-            try {
-                const dadoslogin = { email: email, senha: senha }
-                const response = await fetch(`https://devgarca.com.br/mobile/api/login.php`, {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dadoslogin)
-                })
-                let dadosRecebidos = await response.json()
+    const handleLogin = async () => {
 
-                if (dadosRecebidos.success) {
-                    navigation.replace('Rotas', {
-                        screen: 'Home',
-                        params: { loginToken: dadosRecebidos.token },
-                    });
-                }
-                else {
-                    Alert.alert("erro", "erro")
-                }
+        console.log("aquiiiiiiiiiiii");
+
+        try {
+            if (!email || !senha) {
+                setMensagem('Todos os campos são obrigatórios!');
+                Alert.alert('Erro', 'Todos os campos são obrigatórios!');
+                return;
             }
-            catch {
-                Alert.alert("erro", "preencha todos os campos")
+
+            const data = {
+                email,
+                senha
             }
+
+            const response = await axios.post('http://10.0.2.2:3002/login', data);
+
+            console.log(response.data);
+
+            if (response.status === 200) {
+
+                navigation.navigate('Rotas');
+            }
+        } catch (erro) {
+            console.log(erro);
+            setMensagem('Email ou senha incorretos');
+            Alert.alert('Erro', 'Email ou senha incorretos');
         }
     };
 
@@ -48,14 +49,14 @@ export default function Login({ navigation }) {
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
                         <View style={styles.container}> </View>
                         <View>
-                           
+
                             <TextInput
                                 value={email}
                                 onChangeText={(value) => setEmail(value)}
                                 placeholder=" Digite seu e-mail"
                                 style={styles.input}
                             />
-                            
+
                             <TextInput
                                 value={senha}
                                 onChangeText={(value) => setSenha(value)}
@@ -63,17 +64,21 @@ export default function Login({ navigation }) {
                                 style={styles.input}
                             />
 
+                            {/* <Button title= "Entrar" onPress={handleLogin} /> */}
+
                             <TouchableOpacity
                                 style={styles.btn}
-                                onPress={() => navigation.navigate('Rotas')}
+                                onPress={handleLogin}
                             >
                                 <Text style={styles.btnText}>ENTRAR</Text>
                             </TouchableOpacity>
+
+                            {/* <TouchableOpacity>                           
+                                <Text style={styles.btnText}>ENTRAR</Text>
+                            </TouchableOpacity> */}
                             <Text style={styles.text} onPress={() => navigation.navigate('Cadastro')}>
                                 Não tem conta? Cadastrar-se
                             </Text>
-
-
                         </View>
                     </ScrollView>
                 </ImageBackground>
@@ -119,7 +124,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
 
-   
+
 
     btn: {
         backgroundColor: '#6af33c',
@@ -145,3 +150,4 @@ const styles = StyleSheet.create({
         marginBottom: 90,
     },
 });
+export default Login;

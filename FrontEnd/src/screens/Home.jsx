@@ -12,8 +12,8 @@ function Home() {
 
     return (
         <View style={styles.container}>
-        <Text style={styles.token}>{loginToken}</Text>
-        <View><Button title="Voltar" onPress={sair} color="#ff0000" /></View>
+            <Text style={styles.token}>{loginToken}</Text>
+            <View><Button title="Voltar" onPress={sair} color="#ff0000" /></View>
         </View>
     );
 }
@@ -24,9 +24,9 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 25,
         justifyContent: 'center',
-        
+
     },
-    
+
     token: {
         backgroundColor: '#73baf41e',
         padding: 15,
@@ -34,5 +34,5 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 35,
     },
-   
+
 });

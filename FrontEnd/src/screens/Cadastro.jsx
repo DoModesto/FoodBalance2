@@ -35,9 +35,9 @@ export default function Cadastro({ navigation }) {
                 });
                 setMensagem('Cadastro efetuado com sucesso!!!');
                 // Navega para a tela Inicial após 2 segundos
-                setTimeout(() => {
-                    navigation.navigate('Inicial');
-                }, 2000);
+                // setTimeout(() => {
+                //     navigation.navigate('Inicial');
+                // }, 2000);
             }
         } catch (error) {
             if (error.response) {
