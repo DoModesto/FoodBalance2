@@ -11,6 +11,8 @@ const ListarAlimentos = ({ navigation }) => {
       .then(response => {
         const sortedData = response.data.sort((a, b) => a.id - b.id);
         setData(sortedData);
+
+        console.log(data);
       })
       .catch(error => {
         console.log(JSON.stringify(error));
@@ -28,7 +30,7 @@ const ListarAlimentos = ({ navigation }) => {
   const handleDeletar = (id) => {
     Alert.alert(
       'Confirmar Exclusão',
-      'Tem certeza que deseja excluir este usuário?',
+      'Tem certeza que deseja excluir este alimento?',
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -37,12 +39,12 @@ const ListarAlimentos = ({ navigation }) => {
           onPress: () => {
             axios.delete(`http://10.0.2.2:3002/deletar/${id}`)
               .then(() => {
-                Alert.alert('Sucesso', 'Usuário excluído com sucesso.');
+                Alert.alert('Sucesso', 'Alimento excluído com sucesso.');
                 carregarDados();
               })
               .catch(error => {
                 console.log(error);
-                Alert.alert('Erro', 'Erro ao excluir usuário.');
+                Alert.alert('Erro', 'Erro ao excluir alimento.');
                 console.log(error);
               });
           }
@@ -53,23 +55,25 @@ const ListarAlimentos = ({ navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.item}>
-      <Text style={styles.itemText}>{item.id}</Text>
-      <Text style={styles.itemText}>{item.nome}</Text>
-      <Text style={styles.itemText}>{item.idade}</Text>
-       <Text style={styles.itemText}>{item.nif}</Text>
-        <Text style={styles.itemText}>{item.setor}</Text>
+      <View style={styles.itemLeft}>
+        <Text style={styles.quantidade}>{item.quantidade}</Text>
+        <View style={styles.itemInfo}>
+          <Text style={styles.itemNome}>{item.nome}</Text>
+          <Text style={styles.itemCalorias}>🟠 {item.calorias} kcal</Text>
+        </View>
+      </View>
       <View style={styles.actionButtons}>
         <TouchableOpacity
-          style={styles.iconButton}
+          style={styles.editButton}
           onPress={() => handleAtualizar(item.id)}
         >
-          <Icon name="create-outline" size={22} color="#007BFF" />
+          <Icon name="create-outline" size={18} color="#fff" />
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.iconButton}
+          style={styles.addButton}
           onPress={() => handleDeletar(item.id)}
         >
-          <Icon name="trash-outline" size={22} color="#FF3B30" />
+          <Icon name="trash-outline" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -77,106 +81,159 @@ const ListarAlimentos = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Lista de Usuários</Text>
-      <View style={styles.tableHeader}>
-        <Text style={styles.headerText}>ID</Text>
-        <Text style={styles.headerText}>Nome</Text>
-        <Text style={styles.headerText}>Idade</Text>
-        <Text style={styles.headerText}>nif</Text>
-        <Text style={styles.headerText}>setor</Text>
-        <Text style={[styles.headerText, { flex: 1.5 }]}>Ações</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>ALIMENTOS</Text>
+        <TouchableOpacity 
+          style={styles.adicionarButton} 
+          onPress={() => navigation.navigate('Cadastrar')}
+        >
+          <Text style={styles.adicionarButtonText}>ADICIONAR</Text>
+        </TouchableOpacity>
       </View>
+
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
         style={styles.list}
+        contentContainerStyle={styles.listContent}
       />
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Home')}>
-          <Text style={styles.navButtonText}>Voltar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Cadastrar')}>
-          <Text style={styles.navButtonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
+    backgroundColor: '#F5F5F8',
+    paddingTop: 50,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingTop: 20,
-    backgroundColor: '#fff',
-  },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
+    paddingHorizontal: 20,
     marginBottom: 20,
-    color: '#333',
   },
-  tableHeader: { 
-    flexDirection: 'row', 
-    backgroundColor: '#f0f0f0', 
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000',
+    letterSpacing: 1,
   },
-  headerText: { 
-    flex: 1, 
-    textAlign: 'center', 
-    fontWeight: 'bold', 
-    fontSize: 8,
-    color: '#333',
+  adicionarButton: {
+    backgroundColor: '#7ED957',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  list: { 
-    width: '100%' 
+  adicionarButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  list: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   item: {
     flexDirection: 'row',
-    backgroundColor: '#ffffff',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#cccccc',
+    backgroundColor: '#fff',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'space-between',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
-  itemText: { 
-    color: 'black', 
-    flex: 1, 
-    textAlign: 'center', 
-    fontSize: 10,
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  quantidade: {
+    fontSize: 14,
+    color: '#999',
+    marginRight: 16,
+    minWidth: 40,
+  },
+  itemInfo: {
+    flex: 1,
+  },
+  itemNome: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#000',
+    marginBottom: 4,
+  },
+  itemCalorias: {
+    fontSize: 12,
+    color: '#FF9500',
+    fontWeight: '500',
   },
   actionButtons: {
-    flex: 1.5,
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    gap: 8,
   },
-  iconButton: {
-    padding: 6,
-    borderRadius: 6,
+  editButton: {
+    backgroundColor: '#5AC8FA',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
-  buttonsContainer: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    width: '80%', 
-    marginTop: 20,
+  addButton: {
+    backgroundColor: '#7ED957',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  buttonsContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    backgroundColor: '#F5F5F8',
   },
   navButton: {
-    backgroundColor: 'red',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: '#FF3B30',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   navButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
 });
 

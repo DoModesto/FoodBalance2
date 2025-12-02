@@ -66,7 +66,7 @@ const modelSenai = {
   
     listar: async () => {
         try {
-            const result = await executeQuery("SELECT nome, calorias, quantidade FROM alimentos")
+            const result = await executeQuery("SELECT id, nome, calorias, quantidade FROM alimentos")
             return result;
         }
         catch (error) {

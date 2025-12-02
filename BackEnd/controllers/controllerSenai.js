@@ -67,6 +67,8 @@ const controllerSenai = {
     listarAlimentos: async (req, res) => {
         try {
             const alimentos = await modelSenai.listar();
+
+            console.log(alimentos);
             res.status(200).json(alimentos);
         }
         catch (erro) {
