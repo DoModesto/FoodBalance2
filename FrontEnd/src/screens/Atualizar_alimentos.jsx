@@ -1,45 +1,46 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { useState } from "react";
 import axios from 'axios';
 
-export default function Home({ navigation }) {
+const Atualizar = ({ navigation, route }) => {
+    const [nome, setNome] = useState('');
+    const [calorias, setCalorias] = useState('');
+    const [quantidade, setQuantidade] = useState('');
+    const [mensagem, setMensagem] = useState(''); // Adicionado aqui
 
-    const [mensagem, setMensagem] = useState('');
-    const [formData, setFormData] = useState({
-        nome: '',
-        calorias: '',
-        quantidade: '',
-    });
+    const id = route.params.id;
 
-    const handleInputChange = (name, value) => {
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleCadastrar = async () => {
-        if (!formData.nome || !formData.calorias || !formData.quantidade) {
+    const handleAtualizar = async () => {
+        if (!nome || !calorias || !quantidade ) {
             setMensagem('Todos os campos são obrigatórios!');
             return;
         }
 
-        try {
-            const response = await axios.post('http://10.0.2.2:3002/cadastrarAlimentos', formData);
+        const data = {
+            nome,
+            calorias,
+            quantidade,
+        };
 
-            if (response.status === 201) {
-                setFormData({
-                    nome: '',
-                    calorias: '',
-                    quantidade: '',
-                });
-                setMensagem('Cadastro efetuado com sucesso!!!');
-            }
+        try {
+            const response = await axios.put(`http://10.0.2.2:3002/atualizar/${id}`, data);
+            
+            setMensagem('Atualizado com sucesso!');
+            setNome('');
+            setCalorias('');
+            setQuantidade('');
+            
+
+            setTimeout(() => {
+                navigation.navigate('Rotas');
+            }, 1500);
         } catch (error) {
             if (error.response) {
-                if (error.response.status === 403) {
-                    setMensagem('Erro de autenticação ao cadastrar!');
+                if (error.response.status === 404) {
+                    setMensagem('ID não encontrado na base de dados.');
                 } else {
-                    console.log(error);
-                    setMensagem('Erro ao cadastrar');
+                    setMensagem('Erro ao atualizar. Tente novamente.');
                 }
             } else if (error.request) {
                 setMensagem('Não foi possível conectar-se ao servidor. Verifique sua conexão ou se a API está ativa.');
@@ -55,35 +56,42 @@ export default function Home({ navigation }) {
                 <Text style={styles.titulo}>ALIMENTOS</Text>
                 
                 <View style={styles.card}>
-                    <Text style={styles.tituloCard}>ADICIONAR ALIMENTOS</Text>
+                    <Text style={styles.tituloCard}>ATUALIZAR ALIMENTO</Text>
                     
                     <TextInput
-                        value={formData.nome}
-                        onChangeText={(value) => handleInputChange('nome', value)}
-                        placeholder="nome"
-                        style={styles.input}>
-                    </TextInput>
+                        style={styles.input}
+                        placeholder="Nome"
+                        value={nome}
+                        onChangeText={setNome}
+                    />
                     
                     <TextInput
-                        value={formData.calorias}
-                        onChangeText={(value) => handleInputChange('calorias', value)}
-                        placeholder="kcal"
+                        style={styles.input}
+                        placeholder="calorias"
+                        value={calorias}
+                        onChangeText={setCalorias}
                         keyboardType="numeric"
-                        style={styles.input}>
-                    </TextInput>
+                    />
                     
                     <TextInput
-                        value={formData.quantidade}
-                        onChangeText={(value) => handleInputChange('quantidade', value)}
+                        style={styles.input}
                         placeholder="quantidade"
-                        style={styles.input}>
-                    </TextInput>
-
+                        value={quantidade}
+                        onChangeText={setQuantidade}
+                    />    
+                    
                     <TouchableOpacity
                         style={styles.btn}
-                        onPress={handleCadastrar}
+                        onPress={handleAtualizar}
                     >
-                        <Text style={styles.btnText}>ADICIONAR</Text>
+                        <Text style={styles.btnText}>ATUALIZAR</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.btnVoltar}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Text style={styles.btnVoltarText}>VOLTAR</Text>
                     </TouchableOpacity>
 
                     {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
@@ -91,8 +99,7 @@ export default function Home({ navigation }) {
             </SafeAreaView>
         </SafeAreaProvider>
     );
-}
-
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -149,6 +156,22 @@ const styles = StyleSheet.create({
         fontSize: 16,
         letterSpacing: 1,
     },
+    btnVoltar: {
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+        paddingVertical: 12,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: '#fff',
+    },
+    btnVoltarText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
+        letterSpacing: 1,
+    },
     mensagem: {
         color: '#fff',
         textAlign: 'center',
@@ -157,3 +180,5 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
 });
+
+export default Atualizar;

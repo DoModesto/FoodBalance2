@@ -4,6 +4,7 @@ import Login from "./src/screens/login";
 import Cadastro from "./src/screens/Cadastro";
 import Historico from './src/screens/Historico';
 import Home from "./src/screens/Home";
+import Atualizar from './src/screens/Atualizar_alimentos';
 import Rotas from "./src/components/Rotas";
 import Inicial from './src/screens/inicial';
 import Imc from './src/screens/Calculo_imc';
@@ -31,6 +32,9 @@ function App() {
           headerShown: false
         }} />
         <Stack.Screen name="Cadastro" component={Cadastro} options={{
+          headerShown: false
+        }} />
+         <Stack.Screen name="Atualizar" component={Atualizar} options={{
           headerShown: false
         }} />
         <Stack.Screen name="Rotas" component={Rotas} options={{

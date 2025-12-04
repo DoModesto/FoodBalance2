@@ -75,6 +75,30 @@ const controllerSenai = {
             res.status(500).json({ error: "Erro ao obter a lista de colaboradores" });
         }
     },
+
+    listarUsuarios: async (req, res) => {
+        try {
+            const usuarios = await modelSenai.listarUsuarioss();
+
+            console.log(usuarios);
+            res.status(200).json(usuarios);
+        }
+        catch (erro) {
+            res.status(500).json({ error: "Erro ao obter a lista de colaboradores" });
+        }
+    },
+
+    listarUsuariosID: async (req, res) => {
+        try {
+            const usuarios = await modelSenai.listarUsuariosPorID(req.params.id);
+
+            console.log(usuarios);
+            res.status(200).json(usuarios);
+        }
+        catch (erro) {
+            res.status(500).json({ error: "Erro ao obter a lista de colaboradores" });
+        }
+    },
     
     atualizar: async (req, res) => {
         const {nome, calorias, quantidade } = req.body;
@@ -97,11 +121,14 @@ const controllerSenai = {
     },
     
     deletar: async (req, res) => {
+        console.log("deleteeeeeeee");
         console.log(req.params.id)
         try {
             const consulta = await modelSenai.listarPorID(req.params.id)
+        
             if (consulta.length > 0) {
                 const resultado = await modelSenai.deletar(req.params.id);
+
                 if (resultado.affectedRows > 0) {
                     res.status(204).end()
                 }

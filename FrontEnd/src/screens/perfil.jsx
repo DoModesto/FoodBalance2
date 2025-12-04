@@ -24,10 +24,18 @@ function Principal({ navigation }) {
                                     <Text style={styles.infoTexto4}>Altura cm: </Text>
                                     <Text style={styles.infoTexto4}>Meta Cal: </Text>
 
+
+                                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                                        <Text style={styles.infoTexto5}>
+                                            <Text style={styles.infoSair}>Sair</Text>
+                                        </Text>
+                                    </TouchableOpacity>
+                                    
                                     <View style={styles.infoTexto5}>
-                                        <Text style={styles.infoSair}>SAIR </Text>
                                         <Text>EXCLUIR </Text>
                                     </View>
+
+
                                 </View>
 
                             </View>
@@ -123,7 +131,7 @@ const styles = StyleSheet.create({
     infoTexto5: {
         alignSelf: 'center',
         marginLeft: 5,
-        marginTop: 45,
+        marginTop: 10,
     },
 
     infoSair: {

@@ -9,7 +9,6 @@ const Login = ({ navigation }) => {
     const [senha, setSenha] = useState('');
 
     const handleLogin = async () => {
-
         console.log("aquiiiiiiiiiiii");
 
         try {
@@ -29,7 +28,6 @@ const Login = ({ navigation }) => {
             console.log(response.data);
 
             if (response.status === 200) {
-
                 navigation.navigate('Rotas');
             }
         } catch (erro) {
@@ -47,38 +45,48 @@ const Login = ({ navigation }) => {
                     source={require('../../res/img/pagina-login.png')}
                 >
                     <ScrollView contentContainerStyle={styles.scrollContainer}>
-                        <View style={styles.container}> </View>
-                        <View>
+                        <View style={styles.container}>
 
-                            <TextInput
-                                value={email}
-                                onChangeText={(value) => setEmail(value)}
-                                placeholder=" Digite seu e-mail"
-                                style={styles.input}
-                            />
+                            <Text style={styles.titulo}></Text>
 
-                            <TextInput
-                                value={senha}
-                                onChangeText={(value) => setSenha(value)}
-                                placeholder="Digite sua senha"
-                                style={styles.input}
-                            />
+                            <View style={styles.inputContainer}>
+                                <Icon name="mail-outline" size={20} color="#6af33c" style={styles.iconeInput} />
+                                <TextInput
+                                    value={email}
+                                    onChangeText={(value) => setEmail(value)}
+                                    placeholder="Digite seu e-mail"
+                                    placeholderTextColor="#666"
+                                    style={styles.input}
+                                />
+                            </View>
 
-                            {/* <Button title= "Entrar" onPress={handleLogin} /> */}
+                            <View style={styles.inputContainer}>
+                                <Icon name="lock-closed-outline" size={20} color="#6af33c" style={styles.iconeInput} />
+                                <TextInput
+                                    value={senha}
+                                    onChangeText={(value) => setSenha(value)}
+                                    secureTextEntry={true}
+                                    placeholder="Digite sua senha"
+                                    placeholderTextColor="#666"
+                                    style={styles.input}
+                                />
+                            </View>
 
                             <TouchableOpacity
                                 style={styles.btn}
                                 onPress={handleLogin}
+                                activeOpacity={0.8}
                             >
                                 <Text style={styles.btnText}>ENTRAR</Text>
+                                <Icon name="arrow-forward-outline" size={20} color="#000" style={styles.iconeBotao} />
                             </TouchableOpacity>
 
-                            {/* <TouchableOpacity>                           
-                                <Text style={styles.btnText}>ENTRAR</Text>
-                            </TouchableOpacity> */}
-                            <Text style={styles.text} onPress={() => navigation.navigate('Cadastro')}>
-                                Não tem conta? Cadastrar-se
-                            </Text>
+                            <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+                                <Text style={styles.text}>
+                                    Não tem conta? <Text style={styles.textDestaque}>Cadastrar-se</Text>
+                                </Text>
+                            </TouchableOpacity>
+
                         </View>
                     </ScrollView>
                 </ImageBackground>
@@ -96,58 +104,80 @@ const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
     },
-    icone_login: {
-        alignSelf: 'center',
-        marginTop: 50,
-    },
     container: {
-        padding: 5,
         flex: 1,
-        justifyContent: 'center'
+        justifyContent: 'flex-end',
+        padding: 20,
+        paddingBottom: 60,
     },
     titulo: {
-        fontSize: 30,
+        fontSize: 32,
         marginBottom: 20,
         textAlign: 'center',
-        color: '#000',
+        color: '#fff',
         fontWeight: 'bold',
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 2, height: 2 },
+        textShadowRadius: 4,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#fff',
+        borderWidth: 2,
+        borderRadius: 15,
+        marginBottom: 15,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        paddingHorizontal: 15,
+        marginHorizontal: 10,
+    },
+    iconeInput: {
+        marginRight: 10,
     },
     input: {
-        borderColor: '#ffffff',
-        borderWidth: 2,
-        padding: 14,
-        marginVertical: 10,
-        marginHorizontal: 25,
-        marginBottom: 10,
-        borderRadius: 20,
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        marginRight: 20,
+        flex: 1,
+        padding: 15,
+        fontSize: 16,
+        color: '#333',
     },
-
-
-
     btn: {
         backgroundColor: '#6af33c',
-        width: 190,
-        height: 50,
-        borderRadius: 30,
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 24,
-        marginLeft: 110,
-        marginBottom: 15,
-        marginTop: 25,
+        height: 55,
+        borderRadius: 15,
+        marginTop: 20,
+        marginBottom: 20,
+        marginHorizontal: 10,
+        shadowColor: '#6af33c',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 5,
     },
     btnText: {
         color: '#000',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 18,
+        marginRight: 8,
+    },
+    iconeBotao: {
+        marginLeft: 5,
     },
     text: {
         alignSelf: "center",
-        color: '#000000',
+        color: '#666',
+        fontSize: 14,
+        marginTop: 10,
+    },
+    textDestaque: {
+        color: '#6af33c',
         fontWeight: 'bold',
-        marginBottom: 90,
     },
 });
+
 export default Login;

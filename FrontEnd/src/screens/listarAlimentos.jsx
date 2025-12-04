@@ -6,6 +6,10 @@ import Icon from '@react-native-vector-icons/ionicons';
 const ListarAlimentos = ({ navigation }) => {
   const [data, setData] = useState([]);
 
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
   const carregarDados = () => {
     axios.get('http://10.0.2.2:3002/listar')
       .then(response => {
@@ -18,10 +22,6 @@ const ListarAlimentos = ({ navigation }) => {
         console.log(JSON.stringify(error));
       });
   };
-
-  useEffect(() => {
-    carregarDados();
-  }, []);
 
   const handleAtualizar = (id) => {
     navigation.navigate('Atualizar', { id });
@@ -83,9 +83,9 @@ const ListarAlimentos = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>ALIMENTOS</Text>
-        <TouchableOpacity 
-          style={styles.adicionarButton} 
-          onPress={() => navigation.navigate('Cadastrar')}
+        <TouchableOpacity
+          style={styles.adicionarButton}
+          onPress={() => navigation.navigate('Home')}
         >
           <Text style={styles.adicionarButtonText}>ADICIONAR</Text>
         </TouchableOpacity>
@@ -235,6 +235,20 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
+  tituloCalculo: {
+    backgroundColor: '#ffffff',
+    height: 80,
+    borderBottomLeftRadius: 65,
+    borderBottomRightRadius: 65,
+
+  },
+  fonteCalculo: {
+    color: '#2f2f2f',
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: 25,
+    marginTop: 15,
+  }
 });
 
 export default ListarAlimentos;

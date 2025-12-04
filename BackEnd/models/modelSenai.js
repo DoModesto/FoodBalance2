@@ -1,3 +1,4 @@
+const { listarUsuarios } = require('../controllers/controllerSenai');
 const executeQuery = require('../services/query');
 const bycrypt = require('bcrypt');
 const modelSenai = {
@@ -73,6 +74,21 @@ const modelSenai = {
             throw error;
         }
     },
+
+    listarUsuarioss: async () => {
+        try {
+            const result = await executeQuery("SELECT id, nome, sobrenome FROM usuarios")
+            return result;
+        }
+        catch (error) {
+            throw error;
+        }
+    },
+
+    listarUsuariosPorID: async (id) => {
+        return await executeQuery("SELECT * FROM usuarios WHERE id = ?", [id]);
+    },
+
     listarPorID: async (id) => {
         return await executeQuery("SELECT * FROM alimentos WHERE id = ?", [id]);
     },
@@ -89,7 +105,7 @@ const modelSenai = {
     },
     
     deletar: async (id) => {
-        const result = await executeQuery("DELETE FROM cadastrar_medicamentos WHERE id=?", [id])
+        const result = await executeQuery("DELETE FROM alimentos WHERE id=?", [id])
         return result;
     },
 };
