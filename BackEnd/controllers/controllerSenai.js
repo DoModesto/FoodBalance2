@@ -42,6 +42,25 @@ const controllerSenai = {
         }
     },
 
+    registrarIMC: async (req, res) => {
+        console.log("aquiiii");
+        const { usuarios_id, altura, peso, imc, situacao } = req.body;
+
+        console.log(req.body);
+        try {
+            const resultado = await modelSenai.cadastrarIMC(usuarios_id, altura, peso, imc, situacao);
+            
+            if (resultado.affectedRows > 0) {
+                res.status(201).json({ msg: "IMC registrado com sucesso" });
+            } else {
+                res.status(400).json({ msg: "Falha ao registrar o IMC" });
+            }
+        } catch (erro) {
+            console.error(erro);
+            res.status(500).json({ error: 'Erro ao tentar registrar IMC' });
+        }
+    },
+
     login: async (req, res) => {
         const { email, senha } = req.body;
 

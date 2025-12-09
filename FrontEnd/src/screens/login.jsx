@@ -3,6 +3,7 @@ import { StyleSheet, Text, Button, View, TextInput, TouchableOpacity, ScrollView
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useState } from "react";
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -25,9 +26,10 @@ const Login = ({ navigation }) => {
 
             const response = await axios.post('http://10.0.2.2:3002/login', data);
 
-            console.log(response.data);
+            console.log(response.data.id);
 
             if (response.status === 200) {
+                AsyncStorage.setItem("id", response.data.id);
                 navigation.navigate('Rotas');
             }
         } catch (erro) {

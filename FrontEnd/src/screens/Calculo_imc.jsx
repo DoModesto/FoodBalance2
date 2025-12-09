@@ -1,17 +1,35 @@
 import { ScrollView, StyleSheet, View, TextInput, TouchableOpacity, Button, Text, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
+import axios from 'axios';
 
-function Imc() {
+function Imc({ usuario_id }) {
   const [altura, setAltura] = useState('');
   const [peso, setPeso] = useState('');
   const [resultado, setResultado] = useState(null);
+  const [mensagem, setMensagem] = useState('');
 
-  function calcularIMC() {
+  async function calcularIMC() {
+    if (!altura || !peso) {
+      setMensagem('Preencha todos os campos!');
+      return;
+    }
+
     const alturaLimpa = altura.replace(',', '.').trim();
     const pesoLimpo = peso.replace(',', '.').trim();
     const alturaNumero = parseFloat(alturaLimpa);
     const pesoNumero = parseFloat(pesoLimpo);
+
+    if (isNaN(alturaNumero) || isNaN(pesoNumero)) {
+      setMensagem('Digite valores numéricos válidos!');
+      return;
+    }
+
+    if (alturaNumero <= 0 || pesoNumero <= 0) {
+      setMensagem('Altura e peso devem ser maiores que zero!');
+      return;
+    }
+
     const imc = pesoNumero / (alturaNumero * alturaNumero);
     const imcFormatado = imc.toFixed(1);
 
@@ -36,7 +54,36 @@ function Imc() {
       imc: imcFormatado,
       situacao: situacao
     });
+
+  
+    try {
+      const response = await axios.post('http://10.0.2.2:3002/cadastrarIMC', {
+        usuario_id: usuario_id,
+        altura: alturaNumero,
+        peso: pesoNumero,
+        imc: parseFloat(imcFormatado),
+        situacao: situacao
+      });
+
+      if (response.status === 201) {
+        
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 403) {
+          setMensagem('Erro de autenticação ao cadastrar!');
+        } else {
+          console.log(error);
+          setMensagem('Erro ao cadastrar IMC');
+        }
+      } else if (error.request) {
+        setMensagem('Não foi possível conectar-se ao servidor');
+      } else {
+        setMensagem('Erro inesperado: ' + error.message);
+      }
+    }
   }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -55,13 +102,29 @@ function Imc() {
               </View>
             )}
 
+            {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
+
           </View>
           <View style={styles.inputContainer}>
-            <TextInput value={altura} onChangeText={setAltura} placeholderTextColor={'#000000'} placeholder="Digite sua altura:" style={styles.input} keyboardType="numeric" />
-            <TextInput value={peso} onChangeText={setPeso} placeholderTextColor={'#000000'} placeholder="Digite seu peso:" style={styles.input} keyboardType="numeric" />
+            <TextInput 
+              value={altura} 
+              onChangeText={setAltura} 
+              placeholderTextColor={'#000000'} 
+              placeholder="Digite sua altura:" 
+              style={styles.input} 
+              keyboardType="numeric" 
+            />
+            <TextInput 
+              value={peso} 
+              onChangeText={setPeso} 
+              placeholderTextColor={'#000000'} 
+              placeholder="Digite seu peso:" 
+              style={styles.input} 
+              keyboardType="numeric" 
+            />
             <TouchableOpacity
               style={styles.btn}
-              onPress={(calcularIMC)}
+              onPress={calcularIMC}
             >
               <Text style={styles.btnText}>Calcular</Text>
             </TouchableOpacity>
@@ -79,14 +142,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#dfe2e9',
-
   },
 
   caixaCalculo: {
     backgroundColor: '#ffff',
     justifyContent: 'center',
     borderRadius: 30,
-    height: 330,
+    height: 380,
     width: 370,
     marginLeft: 20,
     marginTop: 80,
@@ -97,7 +159,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     marginTop: 50,
-
   },
 
   textoNav: {
@@ -132,6 +193,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 12,
     marginTop: 5,
+  },
+
+  mensagem: {
+    color: '#2f2f2f',
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 12,
+    fontWeight: '500',
   },
 
   input: {
@@ -174,8 +243,8 @@ const styles = StyleSheet.create({
     height: 80,
     borderBottomLeftRadius: 65,
     borderBottomRightRadius: 65,
-
   },
+  
   fonteCalculo: {
     color: '#2f2f2f',
     alignSelf: 'center',
@@ -183,5 +252,4 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginTop: 15,
   }
-
 });

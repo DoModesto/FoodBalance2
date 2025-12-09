@@ -32,6 +32,19 @@ const modelSenai = {
         }
     },
 
+    cadastrarIMC: async (usuarios_id, altura, peso, imc, situacao) => {
+        try {
+            const result = await executeQuery(
+                "INSERT INTO historico_imc (usuarios_id, altura, peso, imc, situacao) VALUES (?, ?, ?, ?, ?)",
+                [usuarios_id, altura, peso, imc, situacao]
+            );
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    },
+    
+
     validarLogin: async (email, senha) => {
         try {
             const [resultado] = await executeQuery(
