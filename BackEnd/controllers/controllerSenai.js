@@ -44,11 +44,11 @@ const controllerSenai = {
 
     registrarIMC: async (req, res) => {
         console.log("aquiiii");
-        const { usuarios_id, altura, peso, imc, situacao } = req.body;
+        const {  altura, peso, imc, situacao, usuarios_id } = req.body;
 
         console.log(req.body);
         try {
-            const resultado = await modelSenai.cadastrarIMC(usuarios_id, altura, peso, imc, situacao);
+            const resultado = await modelSenai.cadastrarIMC( altura, peso, imc, situacao, usuarios_id);
             
             if (resultado.affectedRows > 0) {
                 res.status(201).json({ msg: "IMC registrado com sucesso" });
@@ -104,6 +104,17 @@ const controllerSenai = {
         }
         catch (erro) {
             res.status(500).json({ error: "Erro ao obter a lista de colaboradores" });
+        }
+    },
+
+    listarDadosUsuario: async (req, res) => {
+        console.log("Id do usuario:", req.query);
+        try {
+            const [resposta] = await modelSenai.buscarDadosUsuario(req.query);
+            res.status(200).json(resposta);
+        } catch (erro) {
+            console.error(erro);
+            res.status(500).json({ success: false, message: 'Erro ao buscar resposta' });
         }
     },
 

@@ -9,5 +9,6 @@ routers.put('/atualizar/:id', controllerSenai.atualizar);
 routers.delete('/deletar/:id', controllerSenai.deletar);
 routers.get('/listar', controllerSenai.listarAlimentos);
 routers.get('/listarUsuarios/:id', controllerSenai.listarUsuariosID);
+routers.get('/listarDadosUsuario', controllerSenai.listarDadosUsuario);
 routers.post('/login', controllerSenai.login);
 module.exports = routers;

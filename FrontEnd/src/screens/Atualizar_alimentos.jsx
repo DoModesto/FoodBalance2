@@ -7,7 +7,7 @@ const Atualizar = ({ navigation, route }) => {
     const [nome, setNome] = useState('');
     const [calorias, setCalorias] = useState('');
     const [quantidade, setQuantidade] = useState('');
-    const [mensagem, setMensagem] = useState(''); // Adicionado aqui
+    const [mensagem, setMensagem] = useState('');
 
     const id = route.params.id;
 

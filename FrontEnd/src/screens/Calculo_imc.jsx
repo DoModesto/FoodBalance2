@@ -1,15 +1,45 @@
-import { ScrollView, StyleSheet, View, TextInput, TouchableOpacity, Button, Text, Alert } from "react-native";
+import { ScrollView, StyleSheet, View, TextInput, TouchableOpacity, Text, Alert } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-function Imc({ usuario_id }) {
+function Imc() {
   const [altura, setAltura] = useState('');
   const [peso, setPeso] = useState('');
   const [resultado, setResultado] = useState(null);
   const [mensagem, setMensagem] = useState('');
+  const [usuarioId, setUsuarioId] = useState(null);
+
+  
+  useEffect(() => {
+    const buscarUsuarioId = async () => {
+      try {
+        const id = await AsyncStorage.getItem('id');
+        console.log('ID recuperado do AsyncStorage:', id);
+
+        if (id && id !== 'null' && id !== 'undefined') {
+          setUsuarioId(parseInt(id)); 
+          console.log('ID do usuário definido:', id);
+        } else {
+          console.log('ID não encontrado ou inválido');
+          setMensagem('Erro: Usuário não está logado');
+        }
+      } catch (error) {
+        console.error('Erro ao buscar ID do usuário:', error);
+        setMensagem('Erro ao recuperar dados do usuário');
+      }
+    };
+
+    buscarUsuarioId();
+  }, []);
 
   async function calcularIMC() {
+    if (!usuarioId) {
+      setMensagem('Erro: Usuário não identificado. Faça login novamente.');
+      return;
+    }
+
     if (!altura || !peso) {
       setMensagem('Preencha todos os campos!');
       return;
@@ -36,17 +66,13 @@ function Imc({ usuario_id }) {
     let situacao;
     if (imc < 18.5) {
       situacao = 'Magreza';
-    }
-    else if (imc < 25) {
+    } else if (imc < 25) {
       situacao = 'Normal';
-    }
-    else if (imc < 30) {
+    } else if (imc < 30) {
       situacao = 'Sobrepeso';
-    }
-    else if (imc < 40) {
+    } else if (imc < 40) {
       situacao = 'Obesidade';
-    }
-    else {
+    } else {
       situacao = 'Obesidade Grave';
     }
 
@@ -55,26 +81,36 @@ function Imc({ usuario_id }) {
       situacao: situacao
     });
 
-  
     try {
+      console.log('Enviando dados para o backend:');
+      console.log('altura:', alturaNumero);
+      console.log('peso:', pesoNumero);
+      console.log('imc:', parseFloat(imcFormatado));
+      console.log('situacao:', situacao);
+      console.log('usuario_id:', usuarioId, 'tipo:', typeof usuarioId);
+
       const response = await axios.post('http://10.0.2.2:3002/cadastrarIMC', {
-        usuario_id: usuario_id,
         altura: alturaNumero,
         peso: pesoNumero,
         imc: parseFloat(imcFormatado),
-        situacao: situacao
+        situacao: situacao,
+        usuarios_id: usuarioId
       });
 
+      console.log('Resposta do backend:', response.data);
+
       if (response.status === 201) {
-        
+        setMensagem('IMC cadastrado com sucesso!');
+        console.log('IMC cadastrado para o usuário:', usuarioId);
       }
     } catch (error) {
+      console.error('Erro completo:', error);
       if (error.response) {
+        console.error('Erro de resposta:', error.response.data);
         if (error.response.status === 403) {
           setMensagem('Erro de autenticação ao cadastrar!');
         } else {
-          console.log(error);
-          setMensagem('Erro ao cadastrar IMC');
+          setMensagem('Erro ao cadastrar IMC: ' + (error.response.data.message || 'Erro desconhecido'));
         }
       } else if (error.request) {
         setMensagem('Não foi possível conectar-se ao servidor');
@@ -83,7 +119,6 @@ function Imc({ usuario_id }) {
       }
     }
   }
-
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
@@ -93,7 +128,7 @@ function Imc({ usuario_id }) {
         <View style={styles.caixaCalculo}>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <Text style={styles.textoNav}>Calculadora de IMC</Text>
-            <Text style={styles.textoNav2}>preencha os campos para calcular</Text>
+            <Text style={styles.textoNav2}>Preencha os campos para calcular</Text>
 
             {resultado && (
               <View style={styles.resultadoContainer}>
@@ -103,34 +138,27 @@ function Imc({ usuario_id }) {
             )}
 
             {mensagem ? <Text style={styles.mensagem}>{mensagem}</Text> : null}
-
           </View>
           <View style={styles.inputContainer}>
-            <TextInput 
-              value={altura} 
-              onChangeText={setAltura} 
-              placeholderTextColor={'#000000'} 
-              placeholder="Digite sua altura:" 
-              style={styles.input} 
-              keyboardType="numeric" 
+            <TextInput
+              value={altura}
+              onChangeText={setAltura}
+              placeholder="Digite sua altura:"
+              style={styles.input}
+              keyboardType="numeric"
             />
-            <TextInput 
-              value={peso} 
-              onChangeText={setPeso} 
-              placeholderTextColor={'#000000'} 
-              placeholder="Digite seu peso:" 
-              style={styles.input} 
-              keyboardType="numeric" 
+            <TextInput
+              value={peso}
+              onChangeText={setPeso}
+              placeholder="Digite seu peso:"
+              style={styles.input}
+              keyboardType="numeric"
             />
-            <TouchableOpacity
-              style={styles.btn}
-              onPress={calcularIMC}
-            >
+            <TouchableOpacity style={styles.btn} onPress={calcularIMC}>
               <Text style={styles.btnText}>Calcular</Text>
             </TouchableOpacity>
           </View>
         </View>
-
       </SafeAreaView>
     </SafeAreaProvider>
   );

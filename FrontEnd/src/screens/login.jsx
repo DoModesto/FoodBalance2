@@ -14,7 +14,6 @@ const Login = ({ navigation }) => {
 
         try {
             if (!email || !senha) {
-                setMensagem('Todos os campos são obrigatórios!');
                 Alert.alert('Erro', 'Todos os campos são obrigatórios!');
                 return;
             }
@@ -29,12 +28,17 @@ const Login = ({ navigation }) => {
             console.log(response.data.id);
 
             if (response.status === 200) {
-                AsyncStorage.setItem("id", response.data.id);
-                navigation.navigate('Rotas');
+                const userId = response.data.id.toString();
+                console.log('Salvando ID no AsyncStorage:', userId);
+                
+               
+                await AsyncStorage.setItem("id", userId);      
+                const idSalvo = await AsyncStorage.getItem("id");
+                console.log('ID recuperado após salvar:', idSalvo);
+                navigation.navigate('Rotas', { usuario_id: response.data.id });
             }
         } catch (erro) {
             console.log(erro);
-            setMensagem('Email ou senha incorretos');
             Alert.alert('Erro', 'Email ou senha incorretos');
         }
     };
